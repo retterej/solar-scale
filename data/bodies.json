@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Sun",
+    "kind": "star",
+    "semi_major_axis_au": 0.0,
+    "diameter_km": 1392700
+  },
+  {
+    "name": "Mercury",
+    "kind": "planet",
+    "semi_major_axis_au": 0.387,
+    "diameter_km": 4879
+  },
+  {
+    "name": "Venus",
+    "kind": "planet",
+    "semi_major_axis_au": 0.723,
+    "diameter_km": 12104
+  },
+  {
+    "name": "Earth",
+    "kind": "planet",
+    "semi_major_axis_au": 1.0,
+    "diameter_km": 12742
+  },
+  {
+    "name": "Mars",
+    "kind": "planet",
+    "semi_major_axis_au": 1.524,
+    "diameter_km": 6779
+  },
+  {
+    "name": "Jupiter",
+    "kind": "planet",
+    "semi_major_axis_au": 5.203,
+    "diameter_km": 139820
+  },
+  {
+    "name": "Saturn",
+    "kind": "planet",
+    "semi_major_axis_au": 9.537,
+    "diameter_km": 116460
+  },
+  {
+    "name": "Uranus",
+    "kind": "planet",
+    "semi_major_axis_au": 19.191,
+    "diameter_km": 50724
+  },
+  {
+    "name": "Neptune",
+    "kind": "planet",
+    "semi_major_axis_au": 30.07,
+    "diameter_km": 49244
+  }
+]
