@@ -11,6 +11,7 @@ class ScaledPlanet(TypedDict):
     name: str
     au: float
     distance_ft: float
+    distance_fmt: str
     diameter_in: float
 
 
