@@ -1,0 +1,14 @@
+[project]
+name = "solar-scale"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "typer>=0.12",
+]
+
+[project.scripts]
+solar-scale = "solar_scale.cli:app"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
