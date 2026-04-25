@@ -39,9 +39,14 @@ class ScaledBody(BaseModel):
     scaled_diameter_mm: float
 
 
+class DisplayMeasurement(BaseModel):
+    imperial: str
+    metric: str
+
+
 class DisplayBody(BaseModel):
     name: str
     kind: str
     orbit_au: float
-    distance_display: str
-    diameter_display: str
+    distance: DisplayMeasurement
+    diameter: DisplayMeasurement

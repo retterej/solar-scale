@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .models import DisplayBody, RequestPreferences, ScaledBody
+from .models import DisplayBody, DisplayMeasurement, RequestPreferences, ScaledBody
 from .units import meters_to_unit, mm_to_unit
 
 _METRIC_DISTANCE_THRESHOLDS: list[tuple[float, str]] = [
@@ -51,6 +51,10 @@ def round_for_display(value: float) -> float:
     return round(value, 6)
 
 
+def _fmt_in(inches: float) -> str:
+    return f"{inches:.2f}".rstrip("0").rstrip(".")
+
+
 def format_ft_in(feet: float) -> str:
     ft = int(feet)
     inches = round((feet - ft) * 12, 2)
@@ -60,10 +64,10 @@ def format_ft_in(feet: float) -> str:
     if ft == 0 and inches == 0.0:
         return "--"
     if ft == 0:
-        return f"{inches} in"
+        return f"{_fmt_in(inches)} in"
     if inches == 0:
         return f"{ft} ft"
-    return f"{ft} ft {inches} in"
+    return f"{ft} ft {_fmt_in(inches)} in"
 
 
 def format_mi_ft(miles: float) -> str:
@@ -79,72 +83,41 @@ def format_mi_ft(miles: float) -> str:
     return f"{mi} mi {feet} ft"
 
 
-def format_km_m(km: float) -> str:
-    k = int(km)
-    m = round((km - k) * 1000)
-    if m >= 1000:
-        k += 1
-        m = 0
-    if k == 0:
-        return f"{m} m"
-    if m == 0:
-        return f"{k} km"
-    return f"{k} km {m} m"
-
-
-def format_m_cm(meters: float) -> str:
-    m = int(meters)
-    cm = round((meters - m) * 100)
-    if cm >= 100:
-        m += 1
-        cm = 0
-    if m == 0:
-        return f"{cm} cm"
-    if cm == 0:
-        return f"{m} m"
-    return f"{m} m {cm} cm"
-
-
-def format_cm_mm(cm: float) -> str:
-    c = int(cm)
-    mm = round((cm - c) * 10, 1)
-    if mm >= 10:
-        c += 1
-        mm = 0.0
-    if c == 0:
-        return f"{mm} mm"
-    if mm == 0:
-        return f"{c} cm"
-    return f"{c} cm {mm} mm"
-
-
 def format_value(value: float, unit: str) -> str:
     if unit == "ft":
         return format_ft_in(value)
     if unit == "mi":
         return format_mi_ft(value)
-    if unit == "km":
-        return format_km_m(value)
-    if unit == "m":
-        return format_m_cm(value)
-    if unit == "cm":
-        return format_cm_mm(value)
-    formatted = f"{round_for_display(value)} {unit}"
-    return "--" if formatted == f"0.0 {unit}" else formatted
+    if unit == "in":
+        v = f"{value:.2f}".rstrip("0").rstrip(".")
+        return "--" if v == "0" else f"{v} in"
+    v = str(round_for_display(value)).rstrip("0").rstrip(".")
+    return "--" if v == "0" else f"{v} {unit}"
+
+
+def _format_distance(value_m: float) -> DisplayMeasurement:
+    imp_val, imp_unit = _best_unit_from_m(value_m, _IMPERIAL_DISTANCE_THRESHOLDS)
+    met_val, met_unit = _best_unit_from_m(value_m, _METRIC_DISTANCE_THRESHOLDS)
+    return DisplayMeasurement(
+        imperial=format_value(imp_val, imp_unit),
+        metric=format_value(met_val, met_unit),
+    )
+
+
+def _format_diameter(value_mm: float) -> DisplayMeasurement:
+    imp_val, imp_unit = _best_unit_from_mm(value_mm, _IMPERIAL_SIZE_THRESHOLDS)
+    met_val, met_unit = _best_unit_from_mm(value_mm, _METRIC_SIZE_THRESHOLDS)
+    return DisplayMeasurement(
+        imperial=format_value(imp_val, imp_unit),
+        metric=format_value(met_val, met_unit),
+    )
 
 
 def format_body(body: ScaledBody, preferences: RequestPreferences) -> DisplayBody:
-    if preferences.unit_system == "metric":
-        dist_value, dist_unit = _best_unit_from_m(body.scaled_distance_m, _METRIC_DISTANCE_THRESHOLDS)
-        size_value, size_unit = _best_unit_from_mm(body.scaled_diameter_mm, _METRIC_SIZE_THRESHOLDS)
-    else:
-        dist_value, dist_unit = _best_unit_from_m(body.scaled_distance_m, _IMPERIAL_DISTANCE_THRESHOLDS)
-        size_value, size_unit = _best_unit_from_mm(body.scaled_diameter_mm, _IMPERIAL_SIZE_THRESHOLDS)
-
     return DisplayBody(
         name=body.name,
         kind=body.kind,
         orbit_au=body.orbit_au,
-        distance_display=format_value(dist_value, dist_unit),
-        diameter_display=format_value(size_value, size_unit),
+        distance=_format_distance(body.scaled_distance_m),
+        diameter=_format_diameter(body.scaled_diameter_mm),
     )

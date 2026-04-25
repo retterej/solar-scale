@@ -31,17 +31,19 @@ def calculate(
     typer.echo("")
     typer.echo(
         f"{'Body':<10} {'Orbit (AU)':>10} "
-        f"{'Distance':>16} {'Diameter':>16}"
+        f"{'Distance (imp)':>18} {'Distance (met)':>16} {'Diameter (imp)':>16} {'Diameter (met)':>14}"
     )
-    typer.echo("-" * 58)
+    typer.echo("-" * 90)
 
     for row in display_rows:
         orbit = f"{row.orbit_au:.3f}" if row.orbit_au >= 0.0005 else "--"
         typer.echo(
             f"{row.name:<10} "
             f"{orbit:>10} "
-            f"{row.distance_display:>16} "
-            f"{row.diameter_display:>16}"
+            f"{row.distance.imperial:>18} "
+            f"{row.distance.metric:>16} "
+            f"{row.diameter.imperial:>16} "
+            f"{row.diameter.metric:>14}"
         )
 
 
